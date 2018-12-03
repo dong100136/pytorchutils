@@ -27,8 +27,7 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=128,
 
 model = Cifar10_ResNet44()
 
-trainer = Trainer("base_v2", model,
-                  resume=True)
+trainer = Trainer("base_v2", model,resume=True)
 
 critern = nn.CrossEntropyLoss(reduce=True)
 

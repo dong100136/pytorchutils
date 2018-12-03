@@ -10,7 +10,7 @@ from pytorchutils.history import History
 class Trainer():
     def __init__(self, model_name, model,
                  optimizer_fn=torch.optim.SGD, loss_fn=torch.nn.CrossEntropyLoss(), metric_fn=None,
-                 resume=True, lr=0.01,
+                 resume=True, lr=0.01,lr_decay=1,
                  model_save_base_path="./saved_model", use_gpu=True):
         self.config = {}
         self.config['model_name'] = model_name
@@ -20,6 +20,7 @@ class Trainer():
         self.config['global_epoch'] = 0
         self.config['init_lr'] = lr
         self.config['lr'] = lr
+        self.config['lr_decay'] = lr_decay
         self.config['use_gpu'] = use_gpu
         self.history = History(self.config['model_save_path'])
 
@@ -61,6 +62,7 @@ class Trainer():
 
     def train(self, dataset, mode='train'):
         if mode == 'train':
+            self.adjust_learning_rate()
             self.model.train(True)
         else:
             self.model.eval()
@@ -141,5 +143,19 @@ class Trainer():
             labels = labels.cuda()
         return inputs, labels
 
+    def lr(self,func):
+        self.update_lr = func
+
     def summary(self, input_size):
         summary(self.model, input_size)
+
+    def update_lr(self,config):
+        return self.config['init_lr'] * (self.config['lr_decay']**self.config['global_epoch'])
+
+    def adjust_learning_rate(self):
+        new_lr = self.update_lr(self.config)
+        if new_lr!=self.config['lr']:
+            print("update lr from %f to %f"%(self.config['lr'],new_lr))
+        self.config['lr'] = new_lr
+        for param_group in self.optim.param_groups:
+            param_group['lr'] = self.config['lr']

@@ -34,13 +34,17 @@ class History():
         print("load model from %s" % (self.model_save_path))
         model_path = os.path.join(self.model_save_path, 'model.pkl')
         optim_path = os.path.join(self.model_save_path, 'optim.pkl')
-        model.load_state_dict(torch.load(model_path))
-        optim.load_state_dict(torch.load(optim_path))
-
         config_path = os.path.join(self.model_save_path, 'config.json')
-        with open(config_path, 'r') as f:
-            lines = f.readlines()
-            config = json.loads(''.join(lines))
+
+        if os.path.exists(model_path) and os.path.exists(optim_path) and os.path.exists(config_path):
+            model.load_state_dict(torch.load(model_path))
+            optim.load_state_dict(torch.load(optim_path))
+           
+            with open(config_path, 'r') as f:
+                lines = f.readlines()
+                config = json.loads(''.join(lines))
+        else:
+            raise Exception("can't find checkpoint in %s"%self.model_save_path)
         return model, optim, config
 
     def clear(self):
@@ -86,14 +90,14 @@ def plot(*args, **kwargs):
 
     print(*plt_names)
 
-    plt.figure(figsize=(25, 6), dpi=200)
+    plt.figure(figsize=(25, 20), dpi=100)
 
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 1, 1)
     plt.plot(*plt_args1)
     plt.legend(plt_names)
     plt.title("loss")
 
-    plt.subplot(1, 2, 2)
+    plt.subplot(2, 1, 2)
     plt.plot(*plt_args2)
     plt.legend(plt_names)
     plt.title("acc")
