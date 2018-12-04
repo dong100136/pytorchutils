@@ -177,16 +177,16 @@ class Trainer():
         print("model name       : %s"%self.config['model_name'])
         print("save path        : %s"%self.config['model_save_path'])
         print("init lr          : %s"%self.config['init_lr'])
-        if self.config['user_lr_func']:
+        if 'user_lr_func' in self.config and self.config['user_lr_func']:
             print("user lr func     : %s"%self.loss_fn.__name__)
         else:
             print("current lr       : %s"%self.config['lr'])
             print("lr decay         : %s"%self.config['lr_decay'])
         
-        if self.config['user_loss_func']:
+        if 'user_loss_func' in self.config and self.config['user_loss_func']:
             print("user loss func   : %s"%self.loss_fn.__name__)
 
-        if self.config['user_metric_func']:
+        if 'user_metric_func' in self.config and self.config['user_metric_func']:
             print("user metric func : %s"%self.config['user_metric_func'])
         print("use gpu          : %s"%self.config["use_gpu"])
         print("resume epochs    : %d"%self.config['global_epoch'])
