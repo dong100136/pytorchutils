@@ -63,7 +63,7 @@ def loss_fn(outputs, labels):
 def metric_fn(outputs, labels):
     preds = torch.argmax(outputs, dim=-1)
     right = labels.eq(preds).sum()
-    return right
+    return right,len(preds)
 
 @trainer.lr
 def update_lr(config):
