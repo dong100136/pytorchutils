@@ -90,6 +90,7 @@ class Trainer():
             right = self.metric_fn(outputs, labels)
             
             # check right
+            print(right)
             if isinstance(right,list) or isinstance(right,tuple):
                 count = right[1]
                 right = right[0]
