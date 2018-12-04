@@ -90,7 +90,6 @@ class Trainer():
             right = self.metric_fn(outputs, labels)
             
             # check right
-            print(right)
             if isinstance(right,list) or isinstance(right,tuple):
                 count = right[1]
                 right = right[0]
@@ -100,7 +99,7 @@ class Trainer():
             mean_loss.append(float(loss))
             mean_right.append(int(right))
             mean_count.append(count)
-            acc = float(right)/len(labels)
+            acc = float(right)/count
 
             if mode == 'train':
                 loss.backward()
