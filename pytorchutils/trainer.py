@@ -88,10 +88,17 @@ class Trainer():
             outputs = self.model(inputs)
             loss = self.loss_fn(outputs, labels)
             right = self.metric_fn(outputs, labels)
+            
+            # check right
+            if type(right)==list:
+                count = right[1]
+                right = right[0]
+            else:
+                count = len(labels)
 
             mean_loss.append(float(loss))
             mean_right.append(int(right))
-            mean_count.append(len(labels))
+            mean_count.append(count)
             acc = float(right)/len(labels)
 
             if mode == 'train':
