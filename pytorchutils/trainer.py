@@ -43,9 +43,10 @@ class Trainer():
 
     def resume_stat(self):
         self.model, self.optim, self.config = self.history.load_model(
-            self.model, self.optim)
+            self.model, self.optim,self.config)
 
     def run(self, train_dataset, valid_dataset, epochs=10):
+        self.print_train_status(epochs)
         begin_epoch = self.config['global_epoch']
         end_epoch = self.config['global_epoch']+epochs
         for epoch in range(begin_epoch, end_epoch):
@@ -82,7 +83,7 @@ class Trainer():
             inputs, labels = self.to_gpu(inputs, labels)
 
             for func in self.before_batch_fns:
-                func(inputs, labels)
+                inputs,labels = func(inputs, labels)
 
             self.optim.zero_grad()
             outputs = self.model(inputs)
@@ -98,8 +99,8 @@ class Trainer():
 
             mean_loss.append(float(loss))
             mean_right.append(int(right))
-            mean_count.append(count)
-            acc = float(right)/count
+            mean_count.append(int(count))
+            acc = float(right)/int(count)
 
             if mode == 'train':
                 loss.backward()
@@ -112,7 +113,7 @@ class Trainer():
 
             self.config['global_step'] += 1
 
-        del inputs, labels, loss, acc
+            del inputs, labels, loss, acc
 
         loss = float(np.mean(mean_loss))
         acc = np.sum(mean_right)/np.sum(mean_count)
@@ -124,6 +125,7 @@ class Trainer():
             time_elapsed // 60, time_elapsed % 60))
 
         self.history.save(mode, self.config['global_step'], loss, acc, lr)
+        torch.cuda.empty_cache()
         return loss, acc
 
     def get_lr(self):
@@ -136,9 +138,11 @@ class Trainer():
         self.after_batch_fns.append(func)
 
     def loss(self, loss_fn):
+        self.config['user_loss_func'] = True
         self.loss_fn = loss_fn
 
     def metric(self, metric_fn):
+        self.config['user_metric_func'] = metric_fn.__name__
         self.metric_fn = metric_fn
 
     def check(self):
@@ -151,6 +155,7 @@ class Trainer():
         return inputs, labels
 
     def lr(self,func):
+        self.config['user_lr_func'] = True
         self.update_lr = func
 
     def summary(self, input_size):
@@ -166,3 +171,25 @@ class Trainer():
         self.config['lr'] = new_lr
         for param_group in self.optim.param_groups:
             param_group['lr'] = self.config['lr']
+
+    def print_train_status(self,epochs):
+        print("=====================================")
+        print("model name       : %s"%self.config['model_name'])
+        print("save path        : %s"%self.config['model_save_path'])
+        print("init lr          : %s"%self.config['init_lr'])
+        if self.config['user_lr_func']:
+            print("user lr func     : %s"%self.loss_fn.__name__)
+        else:
+            print("current lr       : %s"%self.config['lr'])
+            print("lr decay         : %s"%self.config['lr_decay'])
+        
+        if self.config['user_loss_func']:
+            print("user loss func   : %s"%self.loss_fn.__name__)
+
+        if self.config['user_metric_func']:
+            print("user metric func : %s"%self.config['user_metric_func'])
+        print("use gpu          : %s"%self.config["use_gpu"])
+        print("resume epochs    : %d"%self.config['global_epoch'])
+        print("resume step      : %d"%self.config['global_step'])
+        print("final epoch      : %d"%(self.config['global_epoch']+epochs))
+        print("=====================================")

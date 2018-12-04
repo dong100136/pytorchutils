@@ -30,7 +30,7 @@ class History():
         with open(config_path, 'w') as f:
             f.write(json.dumps(config))
 
-    def load_model(self, model, optim):
+    def load_model(self, model, optim,config):
         print("load model from %s" % (self.model_save_path))
         model_path = os.path.join(self.model_save_path, 'model.pkl')
         optim_path = os.path.join(self.model_save_path, 'optim.pkl')
@@ -44,13 +44,22 @@ class History():
                 lines = f.readlines()
                 config = json.loads(''.join(lines))
         else:
-            raise Exception("can't find checkpoint in %s"%self.model_save_path)
+            print("can't find checkpoint in %s"%self.model_save_path)
+            check_and_create_dir(self.model_save_path)
         return model, optim, config
 
     def clear(self):
         print("remove all history in %s" % self.model_save_path)
-        os.system("rm -rf %s" % self.model_save_path)
-        check_and_create_dir(self.model_save_path)
+
+        if os.path.exists(self.model_save_path):
+            confirm = input("%s is exists, comfirm to delete it?[y/n]"%self.model_save_path)
+            while (confirm!='y' and confirm!='n'):
+                confirm= input('please input [y/n]')
+            if confirm=='y':
+                os.system("rm -rf %s" % self.model_save_path)
+                check_and_create_dir(self.model_save_path)
+            else:
+                exit()
 
 
 def plot(*args, **kwargs):
