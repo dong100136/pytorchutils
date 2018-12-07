@@ -172,6 +172,13 @@ class Trainer():
         for param_group in self.optim.param_groups:
             param_group['lr'] = self.config['lr']
 
+    def predict(self,inputs):
+        if self.config['use_gpu']:
+            inputs = inputs.cuda()
+        outputs = self.model(inputs)
+        return outputs.detach().cpu()
+
+
     def print_train_status(self,epochs):
         print("=====================================")
         print("model name       : %s"%self.config['model_name'])

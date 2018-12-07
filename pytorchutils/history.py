@@ -99,14 +99,14 @@ def plot(*args, **kwargs):
 
     print(*plt_names)
 
-    plt.figure(figsize=(25, 20), dpi=100)
+    plt.figure(figsize=(15, 6), dpi=100)
 
-    plt.subplot(2, 1, 1)
+    plt.subplot(1, 2, 1)
     plt.plot(*plt_args1)
     plt.legend(plt_names)
     plt.title("loss")
 
-    plt.subplot(2, 1, 2)
+    plt.subplot(1, 2, 2)
     plt.plot(*plt_args2)
     plt.legend(plt_names)
     plt.title("acc")
