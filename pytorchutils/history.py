@@ -1,6 +1,8 @@
 from pytorchutils.utils import check_and_create_dir
 import os
 import matplotlib.pyplot as plt
+from prettytable import PrettyTable
+import numpy as np
 import seaborn as sns
 import torch
 import json
@@ -97,7 +99,7 @@ def plot(*args, **kwargs):
             plt_args2.extend([d['step'], d['acc'], '-'])
             plt_names.append("%s-%s" % (d['name'], mode))
 
-    print(*plt_names)
+    # print(*plt_names)
 
     plt.figure(figsize=(15, 6), dpi=100)
 
@@ -110,3 +112,19 @@ def plot(*args, **kwargs):
     plt.plot(*plt_args2)
     plt.legend(plt_names)
     plt.title("acc")
+
+    print_history_details(data)
+
+def print_history_details(data):
+    """
+    print max acc from data
+    data[mode][i]['acc']
+    """
+    table = PrettyTable()
+    table.field_names=["idx","name","train best acc","valid best acc"]
+    for i in range(len(data['valid'])):
+        table.add_row([i,data['train'][i]['name'],np.max(data['train'][i]['acc']),np.max(data['valid'][i]['acc'])])
+
+    print(table)
+
+
