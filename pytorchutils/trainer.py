@@ -8,9 +8,9 @@ from pytorchutils.history import History
 
 
 class Trainer():
-    def __init__(self, model_name, model,
+    def __init__(self, model_name, model, optimizer=None,
                  optimizer_fn=torch.optim.SGD, loss_fn=torch.nn.CrossEntropyLoss(), metric_fn=None,
-                 resume=True, lr=0.01,lr_decay=1,
+                 resume=True, lr=0.01, lr_decay=1,
                  model_save_base_path="./saved_model", use_gpu=True):
         self.config = {}
         self.config['model_name'] = model_name
@@ -25,9 +25,12 @@ class Trainer():
         self.history = History(self.config['model_save_path'])
 
         self.model = model
-        self.optim = optimizer_fn(model.parameters(), lr=0.01)
+        if optimizer == None:
+            self.optim = optimizer_fn(model.parameters(), lr=0.01)
+            self.optimizer_fn = optimizer_fn
+        else:
+            self.optim = optimizer
 
-        self.optimizer_fn = optimizer_fn
         self.loss_fn = loss_fn
         self.metric_fn = metric_fn
 
@@ -43,7 +46,7 @@ class Trainer():
 
     def resume_stat(self):
         self.model, self.optim, self.config = self.history.load_model(
-            self.model, self.optim,self.config)
+            self.model, self.optim, self.config)
 
     def run(self, train_dataset, valid_dataset, epochs=10):
         self.print_train_status(epochs)
@@ -83,15 +86,15 @@ class Trainer():
             inputs, labels = self.to_gpu(inputs, labels)
 
             for func in self.before_batch_fns:
-                inputs,labels = func(inputs, labels)
+                inputs, labels = func(inputs, labels)
 
             self.optim.zero_grad()
             outputs = self.model(inputs)
             loss = self.loss_fn(outputs, labels)
             right = self.metric_fn(outputs, labels)
-            
+
             # check right
-            if isinstance(right,list) or isinstance(right,tuple):
+            if isinstance(right, list) or isinstance(right, tuple):
                 count = right[1]
                 right = right[0]
             else:
@@ -114,6 +117,7 @@ class Trainer():
             self.config['global_step'] += 1
 
             del inputs, labels, loss, acc
+            torch.cuda.empty_cache()
 
         loss = float(np.mean(mean_loss))
         acc = np.sum(mean_right)/np.sum(mean_count)
@@ -125,7 +129,7 @@ class Trainer():
             time_elapsed // 60, time_elapsed % 60))
 
         self.history.save(mode, self.config['global_step'], loss, acc, lr)
-        torch.cuda.empty_cache()
+       
         return loss, acc
 
     def get_lr(self):
@@ -154,49 +158,48 @@ class Trainer():
             labels = labels.cuda()
         return inputs, labels
 
-    def lr(self,func):
+    def lr(self, func):
         self.config['user_lr_func'] = True
         self.update_lr = func
 
     def summary(self, input_size):
         summary(self.model, input_size)
 
-    def update_lr(self,config):
+    def update_lr(self, config):
         return self.config['init_lr'] * (self.config['lr_decay']**self.config['global_epoch'])
 
     def adjust_learning_rate(self):
         new_lr = self.update_lr(self.config)
-        if new_lr!=self.config['lr']:
-            print("update lr from %f to %f"%(self.config['lr'],new_lr))
+        if new_lr != self.config['lr']:
+            print("update lr from %f to %f" % (self.config['lr'], new_lr))
         self.config['lr'] = new_lr
         for param_group in self.optim.param_groups:
             param_group['lr'] = self.config['lr']
 
-    def predict(self,inputs):
+    def predict(self, inputs):
         if self.config['use_gpu']:
             inputs = inputs.cuda()
         outputs = self.model(inputs)
         return outputs.detach().cpu()
 
-
-    def print_train_status(self,epochs):
+    def print_train_status(self, epochs):
         print("=====================================")
-        print("model name       : %s"%self.config['model_name'])
-        print("save path        : %s"%self.config['model_save_path'])
-        print("init lr          : %s"%self.config['init_lr'])
+        print("model name       : %s" % self.config['model_name'])
+        print("save path        : %s" % self.config['model_save_path'])
+        print("init lr          : %s" % self.config['init_lr'])
         if 'user_lr_func' in self.config and self.config['user_lr_func']:
-            print("user lr func     : %s"%self.loss_fn.__name__)
+            print("user lr func     : %s" % self.loss_fn.__name__)
         else:
-            print("current lr       : %s"%self.config['lr'])
-            print("lr decay         : %s"%self.config['lr_decay'])
-        
+            print("current lr       : %s" % self.config['lr'])
+            print("lr decay         : %s" % self.config['lr_decay'])
+
         if 'user_loss_func' in self.config and self.config['user_loss_func']:
-            print("user loss func   : %s"%self.loss_fn.__name__)
+            print("user loss func   : %s" % self.loss_fn.__name__)
 
         if 'user_metric_func' in self.config and self.config['user_metric_func']:
-            print("user metric func : %s"%self.config['user_metric_func'])
-        print("use gpu          : %s"%self.config["use_gpu"])
-        print("resume epochs    : %d"%self.config['global_epoch'])
-        print("resume step      : %d"%self.config['global_step'])
-        print("final epoch      : %d"%(self.config['global_epoch']+epochs))
+            print("user metric func : %s" % self.config['user_metric_func'])
+        print("use gpu          : %s" % self.config["use_gpu"])
+        print("resume epochs    : %d" % self.config['global_epoch'])
+        print("resume step      : %d" % self.config['global_step'])
+        print("final epoch      : %d" % (self.config['global_epoch']+epochs))
         print("=====================================")
