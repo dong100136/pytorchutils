@@ -3,13 +3,14 @@ import sys
 
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')))
-from pytorchutils.trainer import Trainer
-from pytorchutils.models.ResNet import Cifar10_ResNet44
-from torch import nn, optim
-import torchvision.transforms as transforms
-import torchvision
-import torch
+
 import argparse
+import torch
+import torchvision
+import torchvision.transforms as transforms
+from torch import nn, optim
+from pytorchutils.models.ResNet import Cifar10_ResNet44
+from pytorchutils.trainer import Trainer
 
 
 
@@ -26,8 +27,10 @@ args = parser.parse_args()
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
 
 train_transform = transforms.Compose(
-    [transforms.RandomSizedCrop(32),
-     transforms.RandomHorizontalFlip(),
+    [
+     transforms.RandomSizedCrop(32),
+    #  transforms.RandomHorizontalFlip(),
+    #  transforms.RandomVerticalFlip(),
      transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
@@ -46,8 +49,9 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=128,
                                          shuffle=False, num_workers=10, pin_memory=True)
 
 model = Cifar10_ResNet44()
-optimizer = torch.optim.SGD(model.parameters(), lr=0.01,momentum=0.9, weight_decay=1e-7)
-trainer = Trainer(args.name, model, lr_decay=0.95, optimizer=optimizer,
+optimizer = torch.optim.SGD(
+    model.parameters(), lr=0.01, momentum=0.9, weight_decay=1e-7)
+trainer = Trainer(args.name, model,lr=0.01, lr_decay=0.95, optimizer=optimizer,
                   resume=args.resume)
 
 critern = nn.CrossEntropyLoss(reduce=True)
