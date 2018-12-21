@@ -117,7 +117,7 @@ class Trainer():
             self.config['global_step'] += 1
 
             del inputs, labels, loss, acc
-            torch.cuda.empty_cache()
+            # torch.cuda.empty_cache()
 
         loss = float(np.mean(mean_loss))
         acc = np.sum(mean_right)/np.sum(mean_count)
