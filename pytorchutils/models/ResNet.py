@@ -63,8 +63,9 @@ class ResidualBottlenect(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, ResidualBlock, init_layer, layers_config, num_classes=5):
+    def __init__(self, ResidualBlock, init_layer, layers_config, num_classes=5,include_top = True):
         super(ResNet, self).__init__()
+        self.include_top = include_top
         self.inchannel = init_layer['outchannel']
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, init_layer['outchannel'], kernel_size=init_layer['kernel_size'],
@@ -93,7 +94,9 @@ class ResNet(nn.Module):
             out = self.layers['layer_%d' % i](out)
         out = F.adaptive_avg_pool2d(out, (1))
         out = out.view(out.size(0), -1)
-        out = self.fc(out)
+
+        if self.include_top:
+            out = self.fc(out)
         return out
 
 

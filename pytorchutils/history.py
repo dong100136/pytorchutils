@@ -111,6 +111,7 @@ def plot(*args, **kwargs):
     plt.subplot(1, 2, 2)
     plt.plot(*plt_args2)
     plt.legend(plt_names)
+    plt.ylim((0,1.1))
     plt.title("acc")
 
     print_history_details(data)

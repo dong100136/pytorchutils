@@ -129,6 +129,8 @@ class Trainer():
             time_elapsed // 60, time_elapsed % 60))
 
         self.history.save(mode, self.config['global_step'], loss, acc, lr)
+
+        torch.cuda.empty_cache()
        
         return loss, acc
 
@@ -154,8 +156,8 @@ class Trainer():
 
     def to_gpu(self, inputs, labels):
         if self.config['use_gpu']:
-            inputs = inputs.cuda()
-            labels = labels.cuda()
+            inputs = inputs.to('cuda:0',non_blocking=True)
+            labels = labels.to('cuda:0',non_blocking=True)
         return inputs, labels
 
     def lr(self, func):
