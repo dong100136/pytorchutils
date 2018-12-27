@@ -95,8 +95,10 @@ class ResNet(nn.Module):
         out = F.adaptive_avg_pool2d(out, (1))
         out = out.view(out.size(0), -1)
 
+        # print(out.size())
         if self.include_top:
             out = self.fc(out)
+        # print(out.size())
         return out
 
 
