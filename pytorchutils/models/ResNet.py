@@ -106,10 +106,10 @@ def ResNet18(num_classes=5,**kwargs):
     return ResNet(ResidualBlock, init_layer, layers, num_classes=num_classes,**kwargs)
 
 
-def ResNet34(num_classes=5,**kwargs):
+def ResNet34(num_classes=5,include_top=True):
     init_layer = {'kernel_size': 7, 'outchannel': 64, 'stride': 2}
     layers = [(3, 64, 2), (4, 128, 2), (6, 256, 2), (3, 512, 2)]
-    return ResNet(ResidualBlock, init_layer, layers, num_classes=num_classes, **kwargs)
+    return ResNet(ResidualBlock, init_layer, layers, num_classes=num_classes, include_top=True)
 
 
 def ResNet50(num_classes=5,**kwargs):
