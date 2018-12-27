@@ -100,22 +100,22 @@ class ResNet(nn.Module):
         return out
 
 
-def ResNet18(num_classes=5):
+def ResNet18(num_classes=5,**kwargs):
     init_layer = {'kernel_size': 7, 'outchannel': 64, 'stride': 2}
     layers = [(2, 64, 2), (2, 128, 2), (2, 256, 2), (2, 512, 2)]
-    return ResNet(ResidualBlock, init_layer, layers, num_classes=num_classes)
+    return ResNet(ResidualBlock, init_layer, layers, num_classes=num_classes,**kwargs)
 
 
-def ResNet34(num_classes=5):
+def ResNet34(num_classes=5,**kwargs):
     init_layer = {'kernel_size': 7, 'outchannel': 64, 'stride': 2}
     layers = [(3, 64, 2), (4, 128, 2), (6, 256, 2), (3, 512, 2)]
-    return ResNet(ResidualBlock, init_layer, layers, num_classes=num_classes)
+    return ResNet(ResidualBlock, init_layer, layers, num_classes=num_classes, **kwargs)
 
 
-def ResNet50(num_classes=5):
+def ResNet50(num_classes=5,**kwargs):
     init_layer = {'kernel_size': 7, 'outchannel': 64, 'stride': 2}
     layers = [(3, 256, 2), (4, 512, 2), (6, 1024, 2), (3, 2048, 2)]
-    return ResNet(ResidualBottlenect, init_layer, layers, num_classes=num_classes)
+    return ResNet(ResidualBottlenect, init_layer, layers, num_classes=num_classes,**kwargs)
 
 
 def ResNet101(num_classes=5):
