@@ -116,3 +116,6 @@ dmypy.json
 
 **/saved_model
 .vscode
+
+._*
+.DS_Store

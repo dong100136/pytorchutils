@@ -12,6 +12,7 @@ sns.set()
 class History():
     def __init__(self, model_save_path):
         self.model_save_path = model_save_path
+        check_and_create_dir(model_save_path)
 
     def save(self,  mode, step, loss, acc, lr):
 
