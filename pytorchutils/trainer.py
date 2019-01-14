@@ -156,13 +156,13 @@ class Trainer():
 
     def to_gpu(self, inputs, labels):
         if self.config['use_gpu']:
-            if inputs is list:
+            if isinstance(inputs, list):
                 for i in range(len(inputs)):
                     inputs[i] = inputs[i].to("cuda:0", non_blocking=True)
             else:
                 inputs = inputs.to("cuda:0", non_blocking=True)
 
-            if labels is list:
+            if isinstance(labels, list):
                 for i in range(len(labels)):
                     labels[i] = labels[i].to("cuda:0", non_blocking=True)
             else:
