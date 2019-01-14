@@ -131,7 +131,7 @@ class Trainer():
         self.history.save(mode, self.config['global_step'], loss, acc, lr)
 
         torch.cuda.empty_cache()
-       
+
         return loss, acc
 
     def get_lr(self):
@@ -156,8 +156,18 @@ class Trainer():
 
     def to_gpu(self, inputs, labels):
         if self.config['use_gpu']:
-            inputs = inputs.to('cuda:0',non_blocking=True)
-            labels = labels.to('cuda:0',non_blocking=True)
+            if inputs is list:
+                for i in range(len(inputs)):
+                    inputs[i] = inputs[i].to("cuda:0", non_blocking=True)
+            else:
+                inputs = inputs.to("cuda:0", non_blocking=True)
+
+            if labels is list:
+                for i in range(len(labels)):
+                    labels[i] = labels[i].to("cuda:0", non_blocking=True)
+            else:
+                labels = labels.to("cuda:0", non_blocking=True)
+
         return inputs, labels
 
     def lr(self, func):
