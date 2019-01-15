@@ -2,9 +2,27 @@
 
 a library for using pytorch easier
 
+## features
+
+[ ] trainer, easier to train and resume
+[ ] default models
+[ ] history log
+[ ] plot and compare hitstory easily
+[ ] csv dataloader
+
+## quick start
+
+```sh
+$ pip3 uninstall pytorchutils
+$ pip3 install --user  git+https://github.com/dong100136/pytorchutils.git
+```
+
 ## simple usage
 
 ```python
+from pytorchutils.trainer import Trainer
+from pytorchutils.models import Cifar10_ResNet44
+
 train_transform = transforms.Compose(
     [transforms.RandomSizedCrop(32),
      transforms.RandomHorizontalFlip(),
@@ -28,21 +46,6 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=128,
 model = Cifar10_ResNet44()
 
 trainer = Trainer("base_v2", model,resume=True)
-
-critern = nn.CrossEntropyLoss(reduce=True)
-
-
-@trainer.loss
-def loss_fn(outputs, labels):
-    return critern(outputs, labels)
-
-
-@trainer.metric
-def metric_fn(outputs, labels):
-    preds = torch.argmax(outputs, dim=-1)
-    right = labels.eq(preds).sum()
-    return right
-
 
 trainer.run(trainloader, testloader, epochs=100)
 ```
