@@ -4,11 +4,15 @@ a library for using pytorch easier
 
 ## features
 
-[ ] trainer, easier to train and resume
-[ ] default models
-[ ] history log
-[ ] plot and compare hitstory easily
-[ ] csv dataloader
+- trainer, easier to train and resume
+
+- default models
+
+- history log
+
+- plot and compare hitstory easily
+
+- csv dataloader
 
 ## quick start
 
