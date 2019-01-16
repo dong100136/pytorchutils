@@ -6,7 +6,7 @@ import os
 
 
 class CsvDataSet(Dataset):
-    def __init__(self, csv, prefix, sample=None, mode='train', delimeter=',', transformer=None, seed=12345):
+    def __init__(self, csv, prefix="", suffix="", sample=None, mode='train', delimeter=',', transformer=None, seed=12345):
         super(CsvDataSet, self).__init__()
         self.csv_path = csv
         self.prefix = prefix
@@ -17,6 +17,7 @@ class CsvDataSet(Dataset):
         self.mode = mode
         self.sample = sample
         self.seed = seed
+        self.suffix = suffix
         random.setstate(seed)
 
         self.__parse_csv__()
@@ -31,7 +32,7 @@ class CsvDataSet(Dataset):
                 for line in f:
                     img_path, label = line.strip().split(self.delimeter)
                     self.data.append(
-                        [os.path.join(self.prefix, img_path), int(label)])
+                        [img_path, int(label)])
 
                     if label not in self.clazz_num:
                         self.clazz_num[label] = 0
@@ -52,9 +53,11 @@ class CsvDataSet(Dataset):
 
     def __getitem__(self, index):
         if self.mode == 'eval':
-            img_path = self.data[index]
+            img_name = self.data[index]
         else:
-            img_path, label = self.data[index]
+            img_name, label = self.data[index]
+
+        img_path = os.path.join(self.prefix, img_name, self.suffix)
         img = imread(img_path)
 
         img = self.toPIL(img)
@@ -65,7 +68,7 @@ class CsvDataSet(Dataset):
             img = self.toTensor(img)
 
         if self.mode == 'eval':
-            return img
+            return img_name, img
         else:
             return img, label
 

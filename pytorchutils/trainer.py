@@ -188,11 +188,20 @@ class Trainer():
         for param_group in self.optim.param_groups:
             param_group['lr'] = self.config['lr']
 
-    def predict(self, inputs):
-        if self.config['use_gpu']:
-            inputs = inputs.cuda()
-        outputs = self.model(inputs)
-        return outputs.detach().cpu()
+    def predict(self, dataloader):
+        self.model.eval()
+
+        preds = []
+        img_names = []
+        for img_name, img in tqdm(dataloader):
+            if self.config['use_gpu']:
+                inputs = inputs.cuda()
+
+            outputs = self.model(inputs).detach().cpu().numpy()
+
+            preds += list(outputs)
+            img_names += img_name
+        return img_names, preds
 
     def default_metric_fn(self, outputs, labels):
         preds = torch.argmax(outputs, dim=-1)
