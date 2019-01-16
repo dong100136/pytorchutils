@@ -44,7 +44,7 @@ class CsvDataSet(Dataset):
 
         if self.sample:
             print("sample %d data from all" % (len(self.data) * self.sample))
-            self.data = self.data[:len(self.data)*self.sample]
+            self.data = self.data[:int(len(self.data)*self.sample)]
 
         self.size = len(self.data)
 
