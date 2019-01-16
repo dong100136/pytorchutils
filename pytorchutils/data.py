@@ -37,7 +37,7 @@ class CsvDataSet(Dataset):
                         self.clazz_num[label] = 0
                     self.clazz_num[label] += 1
 
-        if self.shuffle and self.model != 'eval':
+        if self.shuffle and self.mode != 'eval':
             random.shuffle(self.data)
         print("found %d images" % (len(self.data)))
 
