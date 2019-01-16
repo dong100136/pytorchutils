@@ -32,7 +32,7 @@ class Trainer():
             self.optim = optimizer
 
         self.loss_fn = loss_fn
-        self.metric_fn = metric_fn
+        self.metric_fn = metric_fn if metric_fn else self.default_metric_fn
 
         self.before_batch_fns = []
         self.after_batch_fns = []
@@ -193,6 +193,11 @@ class Trainer():
             inputs = inputs.cuda()
         outputs = self.model(inputs)
         return outputs.detach().cpu()
+
+    def default_metric_fn(self, outputs, labels):
+        preds = torch.argmax(outputs, dim=-1)
+        right = labels.eq(preds).sum()
+        return right, len(preds)
 
     def print_train_status(self, epochs):
         print("=====================================")
