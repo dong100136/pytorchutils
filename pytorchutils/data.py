@@ -6,7 +6,7 @@ import os
 
 
 class CsvDataSet(Dataset):
-    def __init__(self, csv, prefix, mode='train', delimeter=',', transformer=None):
+    def __init__(self, csv, prefix, sample=None, mode='train', delimeter=',', transformer=None):
         super(CsvDataSet, self).__init__()
         self.csv_path = csv
         self.prefix = prefix
@@ -15,6 +15,7 @@ class CsvDataSet(Dataset):
         self.toPIL = ToPILImage()
         self.toTensor = ToTensor()
         self.mode = mode
+        self.sample = sample
 
         self.__parse_csv__()
 
@@ -40,6 +41,10 @@ class CsvDataSet(Dataset):
         if self.mode != 'eval':
             for clazz in self.clazz_num:
                 print("%s  %d" % (clazz, self.clazz_num[clazz]))
+
+        if self.sample:
+            print("sample %d data from all" % (len(self.data) * self.sample))
+            self.data = self.data[:len(self.data)*self.sample]
 
         self.size = len(self.data)
 
