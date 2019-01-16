@@ -6,7 +6,7 @@ import os
 
 
 class CsvDataSet(Dataset):
-    def __init__(self, csv, prefix, sample=None, mode='train', delimeter=',', transformer=None):
+    def __init__(self, csv, prefix, sample=None, mode='train', delimeter=',', transformer=None, seed=12345):
         super(CsvDataSet, self).__init__()
         self.csv_path = csv
         self.prefix = prefix
@@ -16,6 +16,8 @@ class CsvDataSet(Dataset):
         self.toTensor = ToTensor()
         self.mode = mode
         self.sample = sample
+        self.seed = seed
+        random.setstate(seed)
 
         self.__parse_csv__()
 
