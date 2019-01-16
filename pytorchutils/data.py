@@ -16,7 +16,6 @@ class CsvDataSet(Dataset):
         self.toTensor = ToTensor()
         self.mode = mode
         self.sample = sample
-        self.seed = seed
         self.suffix = suffix
         self.shuffle = shuffle
 
@@ -38,7 +37,7 @@ class CsvDataSet(Dataset):
                         self.clazz_num[label] = 0
                     self.clazz_num[label] += 1
 
-        if self.shuffle:
+        if self.shuffle and self.model != 'eval':
             random.shuffle(self.data)
         print("found %d images" % (len(self.data)))
 
