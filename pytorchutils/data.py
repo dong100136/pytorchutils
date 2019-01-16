@@ -6,7 +6,7 @@ import os
 
 
 class CsvDataSet(Dataset):
-    def __init__(self, csv, prefix="", suffix="", sample=None, mode='train', delimeter=',', transformer=None, seed=12345):
+    def __init__(self, csv, prefix="", suffix="", sample=None, mode='train', delimeter=',', transformer=None, shuffle=True):
         super(CsvDataSet, self).__init__()
         self.csv_path = csv
         self.prefix = prefix
@@ -18,7 +18,7 @@ class CsvDataSet(Dataset):
         self.sample = sample
         self.seed = seed
         self.suffix = suffix
-        random.setstate(seed)
+        self.shuffle = shuffle
 
         self.__parse_csv__()
 
@@ -38,7 +38,8 @@ class CsvDataSet(Dataset):
                         self.clazz_num[label] = 0
                     self.clazz_num[label] += 1
 
-        random.shuffle(self.data)
+        if self.shuffle:
+            random.shuffle(self.data)
         print("found %d images" % (len(self.data)))
 
         if self.mode != 'eval':
