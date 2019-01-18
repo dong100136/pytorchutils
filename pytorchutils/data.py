@@ -82,6 +82,9 @@ class ImageFolderDataSet(Dataset):
         self.data = [os.path.join(data_path, x)
                      for x in os.listdir(data_path) if x.split('.')[1] in extends]
 
+        self.toPIL = ToPILImage()
+        self.toTensor = ToTensor()
+
     def __getitem__(self, index):
         img_path = self.data[index]
         img = imread(img_path)
