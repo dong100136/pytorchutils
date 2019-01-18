@@ -193,11 +193,11 @@ class Trainer():
 
         preds = []
         img_names = []
-        for img_name, img in tqdm(dataloader):
+        for img_name, imgs in tqdm(dataloader):
             if self.config['use_gpu']:
-                inputs = inputs.cuda()
+                imgs = imgs.cuda()
 
-            outputs = self.model(inputs).detach().cpu().numpy()
+            outputs = self.model(imgs).detach().cpu().numpy()
 
             preds += list(outputs)
             img_names += img_name
