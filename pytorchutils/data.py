@@ -50,7 +50,6 @@ class CsvDataSet(Dataset):
             self.data = self.data[:int(len(self.data)*self.sample)]
 
         self.size = len(self.data)
-        print(self.data)
 
     def __getitem__(self, index):
         if self.mode == 'eval':
@@ -58,7 +57,7 @@ class CsvDataSet(Dataset):
         else:
             img_name, label = self.data[index]
 
-        img_path = os.path.join(self.prefix, img_name, self.suffix)
+        img_path = os.path.join(self.prefix, img_name+self.suffix)
         img = imread(img_path)
 
         img = self.toPIL(img)
