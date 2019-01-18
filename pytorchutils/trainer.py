@@ -201,7 +201,7 @@ class Trainer():
 
             preds += list(outputs)
             img_names += img_name
-        return img_names, preds
+        return img_names, np.array(preds)
 
     def default_metric_fn(self, outputs, labels):
         preds = torch.argmax(outputs, dim=-1)
