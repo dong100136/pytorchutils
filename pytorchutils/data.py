@@ -77,19 +77,24 @@ class CsvDataSet(Dataset):
 
 
 class ImageFolderDataSet(Dataset):
-    def __init__(self, data_path, extends=['tif'], mode='eval'):
+    def __init__(self, data_path, extends=['tif'], transformer=None,  mode='eval'):
         super(ImageFolderDataSet, self).__init__()
         self.data = [os.path.join(data_path, x)
                      for x in os.listdir(data_path) if x.split('.')[1] in extends]
 
         self.toPIL = ToPILImage()
         self.toTensor = ToTensor()
+        self.transformer = transformer
 
     def __getitem__(self, index):
         img_path = self.data[index]
         img = imread(img_path)
         img = self.toPIL(img)
-        img = self.toTensor(img)
+
+        if self.transformer:
+            img = self.transformer(img)
+        else:
+            img = self.toTensor(img)
 
         img_idx = os.path.basename(img_path).split(".")[0]
         return img_idx, img
