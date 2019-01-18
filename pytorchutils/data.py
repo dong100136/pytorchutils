@@ -50,6 +50,7 @@ class CsvDataSet(Dataset):
             self.data = self.data[:int(len(self.data)*self.sample)]
 
         self.size = len(self.data)
+        print(self.data)
 
     def __getitem__(self, index):
         if self.mode == 'eval':
