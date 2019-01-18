@@ -80,7 +80,7 @@ class ImageFolderDataSet(Dataset):
     def __init__(self, data_path, extends=['tif'], mode='eval'):
         super(ImageFolderDataSet, self).__init__()
         self.data = [os.path.join(data_path, x)
-                     for x in os.listdir(data_path) if x in extends]
+                     for x in os.listdir(data_path) if x.split('.')[1] in extends]
 
     def __getitem__(self, index):
         img_path = self.data[index]
