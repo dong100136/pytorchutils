@@ -199,8 +199,11 @@ class Trainer():
 
             outputs = self.model(imgs)
             print(outputs.shape)
+            print(outputs)
             outputs = torch.nn.functional.softmax(outputs,dim=-1)
             print(outputs.shape)
+            print(outputs)
+            exit()
             outputs = outputs.detach().cpu().numpy()
 
             preds += list(outputs)
