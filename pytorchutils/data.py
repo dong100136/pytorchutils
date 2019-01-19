@@ -6,7 +6,7 @@ import os
 
 
 class CsvDataSet(Dataset):
-    def __init__(self, csv, prefix="", suffix="", sample=None, mode='train', delimeter=',', transformer=None, shuffle=True):
+    def __init__(self, csv, prefix="", suffix="", sample=None, mode='train', delimeter=',', transformer=None, shuffle=True,skip=0):
         super(CsvDataSet, self).__init__()
         self.csv_path = csv
         self.prefix = prefix
@@ -18,6 +18,7 @@ class CsvDataSet(Dataset):
         self.sample = sample
         self.suffix = suffix
         self.shuffle = shuffle
+        self.skip = skip
 
         self.__parse_csv__()
 
@@ -26,8 +27,12 @@ class CsvDataSet(Dataset):
         self.clazz_num = {}
         with open(self.csv_path, 'r') as f:
             if self.mode == 'eval':
+                if self.skip:
+                    f.readline()
                 self.data = [line.strip() for line in f]
             else:
+                if self.skip:
+                    f.readline()
                 for line in f:
                     img_path, label = line.strip().split(self.delimeter)
                     self.data.append(
