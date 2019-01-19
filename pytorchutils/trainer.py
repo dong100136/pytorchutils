@@ -198,7 +198,9 @@ class Trainer():
                 imgs = imgs.cuda()
 
             outputs = self.model(imgs)
+            print(outputs.shape)
             outputs = torch.nn.functional.softmax(outputs,dim=-1)
+            print(outputs.shape)
             outputs = outputs.detach().cpu().numpy()
 
             preds += list(outputs)
